@@ -4,20 +4,22 @@ An interactive tool for choosing how [Logan Search](https://github.com/IndexTheP
 Bloom-filter index (built with [kmindex](https://github.com/tlemane/kmindex)/[kmtricks](https://github.com/tlemane/kmtricks)
 via [kmhelpers](https://github.com/sebllns/kmhelpers)) merges small per-span sub-indexes.
 
-**[Open the calculator tool →](https://RebeccaSalles.github.io/logan-pareto-merge-calculator/)**
+**[Open the page →](https://RebeccaSalles.github.io/logan-pareto-merge-calculator/)**
 
-What you can do on the page:
+**Since November 2026 the page is the team report** on Logan Search query time, in three parts:
 
-- Get a recommended (base, groups) design for a query length and storage budget: the tool plots the real storage-vs-speed Pareto curve across 502 candidate designs and picks the fastest one on it that fits your budget. No index needs to be built to check it.
-- Test the underlying cost formula's own assumptions (partition size, rounding, caps) live, right in the browser.
-- See how storage and query cost move with groups and base, across both the span≤20 and full-Logan corpus.
-- Read the model itself and how it holds up against a real 16-config validation campaign.
+- **Model**: how long a query takes and how much memory it needs (time ≈ reading + counting + start-up), checked on real 60k and 90k-sample indexes and on a synthetic index as wide as full Logan (26.9 M samples). Every measurement was made on one node, genogpu2, on its local SSD.
+- **Grouping**: the Pareto exact grouping, the fastest grouping of the spans for a storage budget (proof included), with a calculator to explore every budget, query length and largest-file limit.
+- **Optimizations**: four small changes inside kmindex, proposed as pull requests on kmindex 0.7.1 ([RebeccaSalles/kmindex #1 to #4](https://github.com/RebeccaSalles/kmindex/pulls)), about nine times faster at full Logan width with the same answers.
+
+The September 2026 calculator (the partition-count score described from [The model](#the-model) on) is kept at [`docs/archive/2026-09-calculator.html`](docs/archive/2026-09-calculator.html); the code and data in this repo are that version's. The November model and its data are embedded in the page itself.
 
 ## What's here
 
 | Path | What it is |
 |---|---|
-| [`docs/index.html`](docs/index.html) | The calculator and the write-up together, in one page (the source for the GitHub Pages site above). Self-contained: all data is embedded, everything runs client-side, no build step. |
+| [`docs/index.html`](docs/index.html) | The team report (November 2026): model, Pareto exact grouping with its calculator, kmindex optimizations. The source of the GitHub Pages site above. Self-contained: all data is embedded, everything runs client-side, no build step. |
+| [`docs/archive/2026-09-calculator.html`](docs/archive/2026-09-calculator.html) | The September 2026 calculator and write-up (partition-count score), as it was. |
 | [`code/`](code/) | The real toolchain behind it: the enumeration/scoring scripts that produced every number on the page, plus [`genouest_training_campaign/`](code/genouest_training_campaign/), the full pipeline that ran the 16-config training campaign on Genouest, for anyone with their own account there. See [Reproducing the benchmark](#reproducing-the-benchmark). |
 | [`data/span_le20/`](data/span_le20/) | 250 candidate designs over the span≤20 slice of the Logan corpus (7.15M accessions). |
 | [`data/full_logan/`](data/full_logan/) | 252 candidate designs over the full Logan corpus, all spans (26.86M accessions). |
@@ -25,6 +27,8 @@ What you can do on the page:
 | [`data/query_examples/`](data/query_examples/) | The 5 real wheat-genome query sequences the minimizer counts (`M(L)`) are computed from. |
 
 ## The model
+
+*This section and the ones below describe the September 2026 calculator (archived); the current model is in the page.*
 
 ```
 score(design, L) = Σ_g  min( nb_partitions(S_g), M(L) )
@@ -106,7 +110,8 @@ which are separate projects under their own licenses (linked above).
 ## Status
 
 Part of an ongoing project (OmicFinder / Logan Search index
-optimization). The calculator's ranking is checked against the real
-16-config training campaign (see the write-up's Validation section); an
-anchor phase of full-scale builds to confirm absolute query time, and a
-full-Logan (all-spans) measurement campaign, are both still pending.
+optimization). November 2026: the model is checked on real 60k and 90k-sample
+indexes and on a synthetic index as wide as full Logan; the kmindex
+optimizations are open as draft pull requests. Still to do: re-measure the
+cost constants on TACC Horizon (Logan 1.2), build one real index with the
+Pareto exact grouping and measure it end to end.
