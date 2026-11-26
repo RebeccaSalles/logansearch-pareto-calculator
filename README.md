@@ -4,7 +4,7 @@ An interactive tool for choosing how [Logan Search](https://github.com/IndexTheP
 Bloom-filter index (built with [kmindex](https://github.com/tlemane/kmindex)/[kmtricks](https://github.com/tlemane/kmtricks)
 via [kmhelpers](https://github.com/sebllns/kmhelpers)) merges small per-span sub-indexes.
 
-**[Open the page →](https://RebeccaSalles.github.io/logan-pareto-merge-calculator/)**
+**[Open the page →](https://RebeccaSalles.github.io/logansearch-pareto-calculator/)**
 
 **Since November 2026 the page is the team report** on Logan Search query time, in three parts:
 
